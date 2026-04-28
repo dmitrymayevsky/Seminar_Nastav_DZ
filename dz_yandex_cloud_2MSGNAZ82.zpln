@@ -1,0 +1,447 @@
+﻿{
+  "paragraphs": [
+    {
+      "user": "anonymous",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=0",
+              "$$hashKey": "object:668"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=1",
+              "$$hashKey": "object:669"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=2",
+              "$$hashKey": "object:670"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=3",
+              "$$hashKey": "object:671"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=4",
+              "$$hashKey": "object:672"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=5",
+              "$$hashKey": "object:673"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1777408270891_1672206951",
+      "id": "paragraph_1777408270891_1672206951",
+      "dateCreated": "2026-04-28T20:31:10+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:348",
+      "text": "%spark.pyspark\nfrom pyspark.sql import functions as F\nfrom pyspark.sql.window import Window\n\nusers = spark.createDataFrame([\n    (\"u1\", \"Berlin\"),\n    (\"u2\", \"Berlin\"),\n    (\"u3\", \"Munich\"),\n    (\"u4\", \"Hamburg\")\n], [\"user_id\", \"city\"])\n\norders = spark.createDataFrame([\n    (\"o1\", \"u1\", \"p1\", 2, 10.0),\n    (\"o2\", \"u1\", \"p2\", 1, 30.0),\n    (\"o3\", \"u2\", \"p1\", 1, 10.0),\n    (\"o4\", \"u2\", \"p3\", 5, 7.0),\n    (\"o5\", \"u3\", \"p2\", 3, 30.0),\n    (\"o6\", \"u3\", \"p3\", 1, 7.0),\n    (\"o7\", \"u4\", \"p1\", 10, 10.0)\n], [\"order_id\", \"user_id\", \"product_id\", \"qty\", \"price\"])\n\nproducts = spark.createDataFrame([\n    (\"p1\", \"Ring VOLA\"),\n    (\"p2\", \"Ring POROG\"),\n    (\"p3\", \"Ring TISHINA\")\n], [\"product_id\", \"product_name\"])\n\nprint(\"Успех\")\nusers.show()\norders.show()\nproducts.show()",
+      "dateUpdated": "2026-04-28T20:32:50+0000",
+      "dateFinished": "2026-04-28T20:34:12+0000",
+      "dateStarted": "2026-04-28T20:32:50+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Успех\n+-------+-------+\n|user_id|   city|\n+-------+-------+\n|     u1| Berlin|\n|     u2| Berlin|\n|     u3| Munich|\n|     u4|Hamburg|\n+-------+-------+\n\n+--------+-------+----------+---+-----+\n|order_id|user_id|product_id|qty|price|\n+--------+-------+----------+---+-----+\n|      o1|     u1|        p1|  2| 10.0|\n|      o2|     u1|        p2|  1| 30.0|\n|      o3|     u2|        p1|  1| 10.0|\n|      o4|     u2|        p3|  5|  7.0|\n|      o5|     u3|        p2|  3| 30.0|\n|      o6|     u3|        p3|  1|  7.0|\n|      o7|     u4|        p1| 10| 10.0|\n+--------+-------+----------+---+-----+\n\n+----------+------------+\n|product_id|product_name|\n+----------+------------+\n|        p1|   Ring VOLA|\n|        p2|  Ring POROG|\n|        p3|Ring TISHINA|\n+----------+------------+\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%spark.pyspark\n\norders_with_revenue = orders.withColumn(\"revenue\", F.col(\"qty\") * F.col(\"price\"))\n\njoined_df = orders_with_revenue \\\n    .join(users, \"user_id\", \"left\") \\\n    .join(products, \"product_id\", \"left\")\n    \naggregated_df = joined_df.groupBy(\n    \"city\", \"product_id\", \"product_name\"\n).agg(\n    F.count(\"order_id\").alias(\"orders_cnt\"),\n    F.sum(\"qty\").alias(\"qty_sum\"),\n    F.sum(\"revenue\").alias(\"revenue_sum\")\n)\n\nprint(\"Выполнена агрегация\")\naggregated_df.show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-04-28T20:34:52+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=6",
+              "$$hashKey": "object:869"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=7",
+              "$$hashKey": "object:870"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=8",
+              "$$hashKey": "object:871"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=11",
+              "$$hashKey": "object:872"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=12",
+              "$$hashKey": "object:873"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1777408370016_971450686",
+      "id": "paragraph_1777408370016_971450686",
+      "dateCreated": "2026-04-28T20:32:50+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:434",
+      "dateFinished": "2026-04-28T20:34:56+0000",
+      "dateStarted": "2026-04-28T20:34:52+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Выполнена агрегация\n+-------+----------+------------+----------+-------+-----------+\n|   city|product_id|product_name|orders_cnt|qty_sum|revenue_sum|\n+-------+----------+------------+----------+-------+-----------+\n| Berlin|        p1|   Ring VOLA|         2|      3|       30.0|\n|Hamburg|        p1|   Ring VOLA|         1|     10|      100.0|\n| Berlin|        p2|  Ring POROG|         1|      1|       30.0|\n| Munich|        p3|Ring TISHINA|         1|      1|        7.0|\n| Munich|        p2|  Ring POROG|         1|      3|       90.0|\n| Berlin|        p3|Ring TISHINA|         1|      5|       35.0|\n+-------+----------+------------+----------+-------+-----------+\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%spark.pyspark\n\nwindow_spec = Window.partitionBy(\"city\").orderBy(F.desc(\"revenue_sum\"))\n\ntop_products_df = aggregated_df \\\n    .withColumn(\"rank\", F.row_number().over(window_spec)) \\\n    .filter(F.col(\"rank\") <= 2) \\\n    .drop(\"rank\")\n    \nprint(\"Тop-2 товара\")\ntop_products_df.orderBy(\"city\", F.desc(\"revenue_sum\")).show()",
+      "user": "anonymous",
+      "dateUpdated": "2026-04-28T20:42:05+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=13",
+              "$$hashKey": "object:1109"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=14",
+              "$$hashKey": "object:1110"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=15",
+              "$$hashKey": "object:1111"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=18",
+              "$$hashKey": "object:1112"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=19",
+              "$$hashKey": "object:1113"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=20",
+              "$$hashKey": "object:1114"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1777408492348_1669751783",
+      "id": "paragraph_1777408492348_1669751783",
+      "dateCreated": "2026-04-28T20:34:52+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:699",
+      "dateFinished": "2026-04-28T20:42:07+0000",
+      "dateStarted": "2026-04-28T20:42:05+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Тop-2 товара\n+-------+----------+------------+----------+-------+-----------+\n|   city|product_id|product_name|orders_cnt|qty_sum|revenue_sum|\n+-------+----------+------------+----------+-------+-----------+\n| Berlin|        p3|Ring TISHINA|         1|      5|       35.0|\n| Berlin|        p1|   Ring VOLA|         2|      3|       30.0|\n|Hamburg|        p1|   Ring VOLA|         1|     10|      100.0|\n| Munich|        p2|  Ring POROG|         1|      3|       90.0|\n| Munich|        p3|Ring TISHINA|         1|      1|        7.0|\n+-------+----------+------------+----------+-------+-----------+\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%spark.pyspark\n\n\nBUCKET_NAME = \"spark-bucket-homework\" \n\nhdfs_path = \"/tmp/sandbox_zeppelin/mart_city_top_products/\"\ns3_path = f\"s3a://{BUCKET_NAME}/mart_city_top_products/\"\n\ntop_products_df.write.mode(\"overwrite\").parquet(hdfs_path)\nprint(f\"HDFS: {hdfs_path}\")\n\ntop_products_df.write.mode(\"overwrite\").parquet(s3_path)\nprint(f\"S3: {s3_path}\")\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-04-28T20:48:30+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=29",
+              "$$hashKey": "object:1807"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=30",
+              "$$hashKey": "object:1808"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=31",
+              "$$hashKey": "object:1809"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=33",
+              "$$hashKey": "object:1810"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=35",
+              "$$hashKey": "object:1811"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=36",
+              "$$hashKey": "object:1812"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=37",
+              "$$hashKey": "object:1813"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=38",
+              "$$hashKey": "object:1814"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=39",
+              "$$hashKey": "object:1815"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=42",
+              "$$hashKey": "object:1816"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=43",
+              "$$hashKey": "object:1817"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=44",
+              "$$hashKey": "object:1818"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1777408925284_1771794026",
+      "id": "paragraph_1777408925284_1771794026",
+      "dateCreated": "2026-04-28T20:42:05+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:909",
+      "dateFinished": "2026-04-28T20:48:38+0000",
+      "dateStarted": "2026-04-28T20:48:30+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "HDFS: /tmp/sandbox_zeppelin/mart_city_top_products/\nS3: s3a://spark-bucket-homework/mart_city_top_products/\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%spark.pyspark\n\nprint(\"Тест HDFS\")\nhdfs_df = spark.read.parquet(\"/tmp/sandbox_zeppelin/mart_city_top_products/\")\nhdfs_df.orderBy(\"city\", F.desc(\"revenue_sum\")).show()\n\nprint(\"Тест S3\")\ns3_df = spark.read.parquet(\"s3a://spark-bucket-homework/mart_city_top_products/\")\ns3_df.orderBy(\"city\", F.desc(\"revenue_sum\")).show()\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-04-28T20:52:26+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=51",
+              "$$hashKey": "object:2191"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=52",
+              "$$hashKey": "object:2192"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=53",
+              "$$hashKey": "object:2193"
+            },
+            {
+              "jobUrl": "https://ui-c9q0encntfrg02rdpgs2-rc1a-dataproc-d-4rrnhv2o5p1gcd59-40487.dataproc-ui.yandexcloud.net/jobs/job?id=54",
+              "$$hashKey": "object:2194"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1777409186140_1262166784",
+      "id": "paragraph_1777409186140_1262166784",
+      "dateCreated": "2026-04-28T20:46:26+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:1142",
+      "dateFinished": "2026-04-28T20:52:27+0000",
+      "dateStarted": "2026-04-28T20:52:26+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Тест HDFS\n+-------+----------+------------+----------+-------+-----------+\n|   city|product_id|product_name|orders_cnt|qty_sum|revenue_sum|\n+-------+----------+------------+----------+-------+-----------+\n| Berlin|        p3|Ring TISHINA|         1|      5|       35.0|\n| Berlin|        p2|  Ring POROG|         1|      1|       30.0|\n|Hamburg|        p1|   Ring VOLA|         1|     10|      100.0|\n| Munich|        p2|  Ring POROG|         1|      3|       90.0|\n| Munich|        p3|Ring TISHINA|         1|      1|        7.0|\n+-------+----------+------------+----------+-------+-----------+\n\nТест S3\n+-------+----------+------------+----------+-------+-----------+\n|   city|product_id|product_name|orders_cnt|qty_sum|revenue_sum|\n+-------+----------+------------+----------+-------+-----------+\n| Berlin|        p3|Ring TISHINA|         1|      5|       35.0|\n| Berlin|        p1|   Ring VOLA|         2|      3|       30.0|\n|Hamburg|        p1|   Ring VOLA|         1|     10|      100.0|\n| Munich|        p2|  Ring POROG|         1|      3|       90.0|\n| Munich|        p3|Ring TISHINA|         1|      1|        7.0|\n+-------+----------+------------+----------+-------+-----------+\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%spark.pyspark\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-04-28T20:51:14+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1777409474193_632086012",
+      "id": "paragraph_1777409474193_632086012",
+      "dateCreated": "2026-04-28T20:51:14+0000",
+      "status": "READY",
+      "focus": true,
+      "$$hashKey": "object:1876"
+    }
+  ],
+  "name": "dz_yandex_cloud",
+  "id": "2MSGNAZ82",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.10.1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {},
+  "path": "/dz_yandex_cloud"
+}
